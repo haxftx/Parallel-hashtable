@@ -1,0 +1,25 @@
+==36499== NVPROF is profiling process 36499, command: ./gpu_hashtable 10000000 4 50
+==36499== Profiling application: ./gpu_hashtable 10000000 4 50
+==36499== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   44.43%  67.948ms         5  13.590ms  12.608us  29.242ms  kernel_insert(int*, int*, int, Htable)
+                   24.57%  37.576ms        14  2.6840ms  3.8400us  4.5606ms  [CUDA memcpy HtoD]
+                   11.77%  18.003ms         4  4.5007ms  4.3410ms  4.6643ms  [CUDA memcpy DtoH]
+                   10.44%  15.962ms         4  3.9904ms  2.9621ms  7.0005ms  kernel_get(int*, int*, int, Htable)
+                    8.79%  13.450ms         4  3.3626ms  49.346us  10.155ms  kernel_reshape(std::pair<int, int>*, std::pair<int, int>*, int, int)
+                    0.01%  8.7050us         5  1.7410us  1.2480us  3.2640us  [CUDA memset]
+      API calls:   48.01%  235.65ms         5  47.130ms  2.9354ms  192.28ms  cudaMallocManaged
+                   20.51%  100.66ms        13  7.7430ms  24.621us  29.354ms  cudaDeviceSynchronize
+                   16.17%  79.394ms        23  3.4519ms  9.0960us  24.042ms  cudaFree
+                   12.59%  61.779ms        18  3.4322ms  24.710us  5.6416ms  cudaMemcpy
+                    1.55%  7.6160ms        18  423.11us  9.3670us  1.2242ms  cudaMalloc
+                    0.52%  2.5708ms         5  514.15us  135.10us  1.1345ms  cudaMemset
+                    0.35%  1.7007ms        13  130.83us  50.632us  422.14us  cudaLaunch
+                    0.18%  866.76us         2  433.38us  429.92us  436.84us  cuDeviceTotalMem
+                    0.10%  512.66us       188  2.7260us     143ns  89.332us  cuDeviceGetAttribute
+                    0.01%  54.994us         2  27.497us  25.141us  29.853us  cuDeviceGetName
+                    0.01%  30.311us        52     582ns     138ns  8.3830us  cudaSetupArgument
+                    0.00%  17.895us        13  1.3760us     528ns  3.0050us  cudaConfigureCall
+                    0.00%  8.6130us        13     662ns     390ns  1.2390us  cudaGetLastError
+                    0.00%  3.5770us         4     894ns     190ns  2.7370us  cuDeviceGet
+                    0.00%  2.0610us         3     687ns     197ns  1.3570us  cuDeviceGetCount

@@ -1,0 +1,51 @@
+Parallel hashtable: implementarea unui HashMap pe GPU, cu operatiile: de inserare a
+unui vector de perechi key:valoare, de gasire a valorilor pentru un vector de
+key, calcularea load factor-ului, contruire a HashMap-ului si distrugerea lui,
+si funtia de reshape care redimensioneaza datele si modifica pozitia dupa noua
+dimensiune a HashMap-ului.
+
+Pentru implementare am inceput de la clasa GpuHashTable cu functiile
+respective si am creat o structura cu campurile count, size si un vector
+de perechi de tip <int, int>. Funtia de hash este key * x % y (x, y - prime)
+Pentru initializare am alocat un vector de
+perechi de dimensiunea size in memoria shared a GPU-ului si am setat
+dimensiunea si count = 0, deoarece HashMap-l este empty.
+Pentru dealocare am eliberat memoria alocata la initializare si size, count = 0
+Pentru funtia de reshape am alocat un nou vector de perechi, am apelat
+kernel-ul care se ocupa de reshape sincronizand thread-urile de GPU, verificare
+de erori GPU, actualizarea dimensiunei, vectorului si eliberearea datelor vechi
+Pentru funtia de inserare am alocat memorie pentru keys si values pe GPU, am
+copiat datele pe GPU, am verificat daca am nevoie de reshape si am apelat
+reshape apoi am apelat kernel-ul ce se ocupa de, insert sincronizand
+thread-urile de GPU, verificare de erori GPU, actualizarea count-ului si
+dezalocarea memoriei GPU.
+Pentru funtia de gasire am alocat memorie pentru keys, values pe GPU si values
+pe CPU, am copiat datele pe GPU si am apelat kernel-ul care se ocupa de gasire
+sincronizand thread-urile de GPU, verificare de erori GPU, copiere datelor pe
+CPU si dezalocarea memoriei GPU.
+
+Funtiile kernel:
+reshape - aflu id pe care lucreaza thread-ul si daca este setata o cheie, caut
+liniar primul slot liber in noul vector si setez key:valoare.
+insert - aflu id pe care lucreaza thread-ul si caut liniar in HashMap prima
+cheie nesetata si setez key:valoare, daca cheia este gasita fac update la
+valoare.
+get -aflu id pe care lucreaza thread-ul si caut liniar in HashMap cheia, la
+gasire setez valoarea asociata cheiei din HashMap.
+
+Alocarea si dezalocarea memoriei de GPU a efectuat-o cu wraper-ul pus la
+dispozitie glbGpuAllocator.
+Pentru memoria din HashMap, alocarea s-a facut shared, pentru apelul de kernel
+nu.
+Am folosit pentru coding style 120 coloane, considerand ca este cod C++, care
+este si OOP.
+
+Analiza output:
+Get este mai rapid ca insert, deoarece in insert se mai apeleaza si reshape.
+Dupa observatiile mele cel mai costisitor API call este cudaMallocManaged,
+iar activitatea GPU-ului este cea mai mare la lucrul cu memcpy, la copierea
+datelor de pe CPU pe GPU, urmata de insert, get, copierea datelor de pe GPU pe
+CPU si reshape.
+
+Fisierele T[1:5].nvprof este otputul din rularea testelor cu NVPROF.
+Fisierul result este output-l rularii python bench.py
